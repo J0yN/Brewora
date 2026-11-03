@@ -33,7 +33,7 @@ footer{text-align:center}footer img{width:min(520px,80%);height:auto}footer h2{m
 </style></head><body>
 <canvas id="sw" aria-hidden="true"></canvas>
 <nav><a class="d" href="#top">Brewvora</a><div><a href="#story">Story</a><a href="#identity">Identity</a><a href="#packaging">Packaging</a><a href="#spaces">Spaces</a><a href="#merch">Merch</a></div></nav>
-<header class="hero" id="top"><p class="l">Brand identity, packaging and interiors for a coffee house.</p><p class="r">Move your cursor, click to scatter. Scroll and the swarm splits into squads that build each image.</p><h1 style="position:absolute;left:-9999px">Brewvora, brewed for better moments</h1></header>
+<header class="hero" id="top"><p class="l">Brand identity, packaging and interiors for a coffee house.</p><p class="r">Move your cursor, click to scatter. Scroll and the swarm works like a construction crew, building each image.</p><h1 style="position:absolute;left:-9999px">Brewvora, brewed for better moments</h1></header>
 <div class="mq" aria-hidden="true"><div>Brewed for better moments &nbsp;★&nbsp; Brewed for better moments &nbsp;★&nbsp; Brewed for better moments &nbsp;★&nbsp; Brewed for better moments &nbsp;★&nbsp; Brewed for better moments &nbsp;★&nbsp; Brewed for better moments &nbsp;★&nbsp; Brewed for better moments &nbsp;★&nbsp; Brewed for better moments &nbsp;★&nbsp;</div></div>
 <section class="mah" id="story"><div class="in"><p class="big d">Coffee is more than a drink. It’s a moment to pause, connect, and recharge.</p><p class="lede">Brewvora blends premium coffee with a modern lifestyle and crafts every cup with care, quality, and purpose. From the first sip to the last, the brand creates experiences that feel warm, memorable, and worth returning to.</p></div></section>
 <section id="identity"><div class="in"><div class="head"><h2>One hand, one cup, one bean.</h2><p>The mark offers a cup the way a good host would. A rounded wordmark keeps it friendly, and the tagline sits in clean Montserrat capitals.</p></div>
@@ -62,7 +62,7 @@ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;if(d[i+3]>140)pts.pus
 const ox=(W-lw)/2,oy=H*.47-lh/2;P.length=Math.min(P.length,pts.length);
 pts.forEach((q,i)=>{let p=P[i];if(!p){const a=Math.random()*6.283;p=P[i]={x:W/2+Math.cos(a)*W,y:H/2+Math.sin(a)*H,vx:0,vy:0,rot:0,ph:Math.random()*6.283,vis:i%16===0,rad:70+Math.pow(Math.random(),1.5)*300,spd:(.4+Math.random()*.9)*(Math.random()<.5?-1:1),k:.004+Math.random()*.012,bs:3+Math.random()*2.5,pc:pal[i%5]}}
 p.hx=ox+q[0];p.hy=oy+q[1];p.col=q[2];p.r=step*.36;if(rm){p.x=p.hx;p.y=p.hy}})}
-const imgs=[...document.querySelectorAll('figure>img')];
+const imgs=[...document.querySelectorAll('figure>img')],DX=Math.cos(.5),DY=Math.sin(.5),NX=-DY,NY=DX,sm=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)},CC=['#9a4330','#c9843a','#e9af58','#f7d38f'];
 let pend=[],tgs=[],fd=[],inited=false,act=0,rs=.06,lx=0,ly=0;
 function init(){if(inited)return;inited=true;if(rm)return;pend=imgs.slice();imgs.forEach(e=>e.style.opacity=0)}
 function show(e){e.style.opacity=1;pend=pend.filter(x=>x!==e)}
@@ -73,38 +73,42 @@ function mkTg(e,r,t){const w=Math.ceil(r.width),h=Math.ceil(r.height),pc=documen
 const g=sc.getContext('2d',{willReadFrequently:true}),nw=e.naturalWidth,nh=e.naturalHeight,s=Math.max(w/nw,h/nh),dw=nw*s,dh=nh*s,op=getComputedStyle(e).objectPosition.split(' ').map(v=>parseFloat(v)/100),o0=isNaN(op[0])?.5:op[0],o1=isNaN(op[1])?.5:op[1];
 g.drawImage(e,(w-dw)*o0,(h-dh)*o1,dw,dh);
 const cols=Math.max(2,Math.min(7,Math.round(w/115))),rows=Math.max(2,Math.min(5,Math.round(h/115))),tiles=[];
-for(let c=0;c<cols;c++)for(let q=0;q<rows;q++)tiles.push({x:c*w/cols,y:q*h/rows,tw:w/cols,th:h/rows,type:(c+2*q)%3,W:1+Math.random()*.5,k:c/cols+q/rows+Math.random()*.5});
-const n=tiles.length;tiles.slice().sort((a,b)=>a.k-b.k).forEach((tl,i)=>{tl.ts=.6+i/Math.max(1,n-1)*(1.6+n*.03);tl.te=tl.ts+tl.W});
-return{e,r,t0:t,w,h,pc,pg:pc.getContext('2d'),d:g.getImageData(0,0,w,h).data,tiles,end:Math.max(...tiles.map(a=>a.te))+.15,el:0}}
+for(let c=0;c<cols;c++)for(let q=0;q<rows;q++)tiles.push({x:c*w/cols,y:q*h/rows,tw:w/cols,th:h/rows,type:(c+2*q)%3,W:.9+Math.random()*.35,k:c/cols+q/rows+Math.random()*.5});
+const n=tiles.length;tiles.slice().sort((a,b)=>a.k-b.k).forEach((tl,i)=>{tl.ts=1.9+i/Math.max(1,n-1)*(1+n*.02);tl.te=tl.ts+tl.W});
+return{e,r,t0:t,w,h,pc,pg:pc.getContext('2d'),d:g.getImageData(0,0,w,h).data,tiles,nc:Math.max(3,Math.round(w/90)),end:4.6,el:0}}
 function pick(t){for(const e of pend.slice())if(e.getBoundingClientRect().bottom<30)show(e);
 const c=[];for(const e of pend){if(!e.complete||!e.naturalWidth)continue;const r=e.getBoundingClientRect(),v=Math.max(0,Math.min(r.bottom,H)-Math.max(r.top,0));if(v/r.height>.5||v>H*.45)c.push([e,v])}
 c.sort((a,b)=>b[1]-a[1]);tgs=c.slice(0,3).map(([e])=>mkTg(e,e.getBoundingClientRect(),t));if(!tgs.length)return;
 const tot=tgs.reduce((s,g)=>s+g.w*g.h,0);let i=0;
-tgs.forEach((g,k)=>{const n=k===tgs.length-1?P.length-i:Math.floor(P.length*g.w*g.h/tot);for(let j=0;j<n;j++,i++){const p=P[i];p.tg=g;p.ti=j%g.tiles.length;if(p.ab){p.ab=false;p.x=lx+Math.random()*8-4;p.y=ly+Math.random()*8-4;p.vx=p.vy=0}}})}
+tgs.forEach((g,k)=>{const n=k===tgs.length-1?P.length-i:Math.floor(P.length*g.w*g.h/tot);let c2=0;for(let j=0;j<n;j++,i++){const p=P[i],m=j%20;p.tg=g;p.ro=m<5?0:m<10?1:m<17?2:3;p.fr=(j*.61803)%1;p.ti=p.ro===2?c2++%g.tiles.length:0;if(p.ab){p.ab=false;p.x=lx+Math.random()*8-4;p.y=ly+Math.random()*8-4;p.vx=p.vy=0}}})}
+function en(p,g){return p.ro===0?1.75:p.ro===1?2.8:p.ro===2?g.tiles[p.ti].te:4.5}
 function frame(now){t=now/1000;cx.clearRect(0,0,W,H);const hero=scrollY<H*.5;morph+=((hero?0:1)-morph)*.05;
 if(inited&&!rm){if(hero){if(tgs.length){tgs.forEach(rel);tgs=[]}}else{if(!tgs.length)pick(t);
 for(const g of tgs){const r=g.r=g.e.getBoundingClientRect(),v=Math.min(r.bottom,H)-Math.max(r.top,0);g.el=t-g.t0;
 if(v<r.height*.15&&v<H*.1){show(g.e);g.x=1}else if(g.el>=g.end){g.e.style.transition='opacity .7s';show(g.e);fd.push({e:g.e,pc:g.pc,a:1});g.x=1}}
 tgs=tgs.filter(g=>g.x?(rel(g),0):1)}}
 for(let k=fd.length-1;k>=0;k--){const f=fd[k];f.a-=.016/.7;if(f.a<=0){fd.splice(k,1);continue}const q=f.e.getBoundingClientRect();cx.globalAlpha=f.a;cx.drawImage(f.pc,q.left,q.top)}
-cx.globalAlpha=1;for(const g of tgs)cx.drawImage(g.pc,g.r.left,g.r.top);
+cx.globalAlpha=1;cx.font='600 11px Montserrat,sans-serif';
+for(const g of tgs){cx.drawImage(g.pc,g.r.left,g.r.top);const L=g.el<1.2?'01  FOUNDATION':g.el<1.9?'02  WALLS':g.el<3.2?'03  INTERIOR':'04  FINISHES',tw=cx.measureText(L).width+18;cx.fillStyle='#521d18';cx.fillRect(g.r.left+10,g.r.top+10,tw,22);cx.fillStyle='#fde5bb';cx.fillText(L,g.r.left+19,g.r.top+25)}
 sp+=((has?Math.hypot(mx-pmx,my-pmy):0)-sp)*.1;pmx=mx;pmy=my;act+=((has?Math.min(sp/10,1):0)-act)*.1;
 const cx0=has?mx:W-60,cy0=has?my:H-60,m=morph;lx=cx0;ly=cy0;rs+=((.14+act*.4)-rs)*.08;
-for(let i=0;i<P.length;i++){const p=P[i];let busy=0;
+for(let i=0;i<P.length;i++){const p=P[i];let busy=0,rd=0;
 if(hero){if(p.ab){p.ab=false;p.x=lx+Math.random()*8-4;p.y=ly+Math.random()*8-4;p.vx=p.vy=0}let ax=(p.hx-p.x)*.05,ay=(p.hy-scrollY-p.y)*.05;const dx=p.x-mx,dy=p.y-my,d=Math.hypot(dx,dy);
 if(d<130&&d>.1){const f=(1-d/130)*(1.6+sp*.05)*3;ax+=dx/d*f;ay+=dy/d*f}p.vx=(p.vx+ax)*.84;p.vy=(p.vy+ay)*.84}
-else{if(p.tg&&p.tg.el>=p.tg.tiles[p.ti].te)p.tg=null;
-if(p.tg){busy=1;const g=p.tg,tl=g.tiles[p.ti],r=g.r,u=(g.el-tl.ts)/tl.W;let gx,gy;
-if(u<=0){gx=r.left+tl.x+tl.tw/2+Math.cos(t*1.5+p.ph)*tl.tw*.42;gy=r.top+tl.y+tl.th/2+Math.sin(t*1.8+p.ph*2)*tl.th*.42}
-else{const q=pt(tl,Math.max(0,Math.min(1,u*1.3-((p.ph*7.31)%1)*.3)),p.ph);gx=r.left+tl.x+q[0];gy=r.top+tl.y+q[1]}
+else{if(p.tg&&p.tg.el>=en(p,p.tg))p.tg=null;
+if(p.tg){busy=1;const g=p.tg,r=g.r,el=g.el,ro=p.ro,fr=p.fr,bk=Math.pow((p.ph*7.31)%1,2);let gx,gy;
+if(ro===0){if(el<.5){gx=r.left+fr*r.width;gy=r.bottom+14+Math.sin(t*3+p.ph)*6}else{const u=sm((el-.5)/1.1);gx=r.left+fr*r.width+Math.sin(t*2+p.ph*3)*10;gy=r.bottom+40-u*(r.height+80)+Math.sin(fr*9+t*3)*18+bk*70;rd=22}}
+else if(ro===1){const nc=g.nc,c=Math.min(nc-1,Math.floor(fr*nc)),st=1.2+c/nc*.7,cw=r.width/nc;gx=r.left+(c+.5+(((p.ph*3.1)%1)-.5)*.9)*cw;if(el<st)gy=r.bottom-4+Math.sin(t*3+p.ph)*8;else{gy=r.bottom+10-sm((el-st)/.8)*(r.height+30)+bk*50;rd=13}}
+else if(ro===2){const tl=g.tiles[p.ti],u=(el-tl.ts)/tl.W;if(u<=0){gx=r.left+tl.x+tl.tw/2+Math.cos(t*1.5+p.ph)*tl.tw*.42;gy=r.top+tl.y+tl.th/2+Math.sin(t*1.8+p.ph*2)*tl.th*.42}else{const q=pt(tl,Math.max(0,Math.min(1,u*1.3-((p.ph*7.31)%1)*.3)),p.ph);gx=r.left+tl.x+q[0];gy=r.top+tl.y+q[1];rd=8}}
+else{if(el<3.2){gx=r.left+fr*r.width;gy=r.top-14+Math.sin(t*3+p.ph)*6}else{const Lr=Math.abs(DY)*r.width+Math.abs(DX)*r.height+140,mx2=(Math.abs(DX)*r.width+Math.abs(DY)*r.height)/2+100,s=-mx2+2*mx2*sm((el-3.2)/1.2),lat=(fr-.5)*Lr+Math.sin(t*2+p.ph*3)*20;gx=r.left+r.width/2+DX*(s-bk*120)+NX*lat;gy=r.top+r.height/2+DY*(s-bk*120)+NY*lat;rd=5}}
 p.vx=(p.vx+(gx-p.x)*.14)*.78;p.vy=(p.vy+(gy-p.y)*.14)*.78}
 else if(i%12!==0){if(p.ab)continue;p.vx=(p.vx+(cx0-p.x)*.06)*.85;p.vy=(p.vy+(cy0-p.y)*.06)*.85}
 else{const a=p.ph+t*p.spd,r=p.rad*rs*(1+.25*Math.sin(t*1.3+p.ph));p.vx=(p.vx+(cx0+Math.cos(a)*r-p.x)*p.k)*.93;p.vy=(p.vy+(cy0+Math.sin(a)*r*.65-p.y)*p.k)*.93}}
 p.x+=p.vx;p.y+=p.vy;
-if(busy){const g=p.tg,tl=g.tiles[p.ti];if(g.el>tl.ts+.05){const X=p.x-g.r.left,Y=p.y-g.r.top;if(X>=0&&Y>=0&&X<g.w&&Y<g.h){const o=((Y|0)*g.w+(X|0))*4,d=g.d;g.pg.fillStyle=`rgb(${d[o]},${d[o+1]},${d[o+2]})`;g.pg.beginPath();g.pg.arc(X,Y,9,0,6.283);g.pg.fill()}}}
+if(rd){const g=p.tg,X=p.x-g.r.left,Y=p.y-g.r.top;if(X>=0&&Y>=0&&X<g.w&&Y<g.h){const o=((Y|0)*g.w+(X|0))*4,d=g.d;g.pg.fillStyle=`rgb(${d[o]},${d[o+1]},${d[o+2]})`;g.pg.beginPath();g.pg.arc(X,Y,rd,0,6.283);g.pg.fill()}}
 if(!hero&&!busy&&i%12!==0&&Math.hypot(cx0-p.x,cy0-p.y)<14){p.ab=true;continue}
 if(m>.02){const g=Math.atan2(p.vy,p.vx);p.rot+=Math.atan2(Math.sin(g-p.rot),Math.cos(g-p.rot))*.15*m}
-const rx=p.r*(1-m)+p.bs*m,ry=p.r*(1-m)+p.bs*.6*m;cx.fillStyle=m<.5?p.col:p.pc;cx.beginPath();cx.ellipse(p.x,p.y,rx,ry,p.rot*m,0,6.283);cx.fill()}
+const rx=p.r*(1-m)+p.bs*m,ry=p.r*(1-m)+p.bs*.6*m;cx.fillStyle=busy?CC[p.ro]:m<.5?p.col:p.pc;cx.beginPath();cx.ellipse(p.x,p.y,rx,ry,p.rot*m,0,6.283);cx.fill()}
 cx.globalAlpha=1;if(!rm)requestAnimationFrame(frame)}
 addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;has=true});
 addEventListener('pointerdown',e=>{for(const p of P){const dx=p.x-e.clientX,dy=p.y-e.clientY,d=Math.hypot(dx,dy);if(d<240&&d>.1){const f=(1-d/240)*16;p.vx+=dx/d*f;p.vy+=dy/d*f}}});
