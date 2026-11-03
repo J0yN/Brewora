@@ -65,37 +65,32 @@ p.hx=ox+q[0];p.hy=oy+q[1];p.col=q[2];p.r=step*.36;if(rm){p.x=p.hx;p.y=p.hy}})}
 const imgs=[...document.querySelectorAll('figure>img')];let pend=[],tgt=null,inited=false,act=0,rs=.06,lx=0,ly=0;
 const DX=Math.cos(.5),DY=Math.sin(.5),NX=-DY,NY=DX;
 function hp(w,h,s){const Q=[[0,0],[w,0],[w,h],[0,h]],o=[],f=q=>(q[0]-w/2)*DX+(q[1]-h/2)*DY-s;for(let i=0;i<4;i++){const A=Q[i],B=Q[(i+1)%4],fa=f(A),fb=f(B);if(fa<=0)o.push(A);if(fa*fb<0){const k=fa/(fa-fb);o.push([A[0]+(B[0]-A[0])*k,A[1]+(B[1]-A[1])*k])}}return o.length>2?'polygon('+o.map(q=>q[0]+'px '+q[1]+'px').join(',')+')':'polygon(0 0,0 0,0 0)'}
-const TA=.5,TB=1.4,TC=2.4,TE=3.6,TD=3.9,sm=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
-function vs(r){const L=r.left,T=r.top,w=r.width,h=r.height;return[[L+w,T+h],[L,T+h],[L,T],[L+w,T],[L+w,T+h]]}
-function Hd(r,tau){const V=vs(r);if(tau<TA)return V[2];if(tau<TB){const u=sm((tau-TA)/(TB-TA));return[r.left+u*r.width,r.top+u*r.height]}
-const s=sm((tau-TB)/(TC-TB))*4,k=Math.min(3,Math.floor(s)),f=s-k;return[V[k][0]+(V[k+1][0]-V[k][0])*f,V[k][1]+(V[k+1][1]-V[k][1])*f]}
-function ov(r,el,t,Rm){const V=vs(r),L=r.left,T=r.top,w=r.width,h=r.height;cx.save();cx.globalAlpha=1;cx.lineWidth=1.5;cx.strokeStyle='#e9af58';
-if(el<TB){const u=sm((el-TA)/(TB-TA));if(u>0){cx.setLineDash([6,4]);cx.fillStyle='rgba(233,175,88,.14)';cx.fillRect(L,T,u*w,u*h);cx.strokeRect(L,T,u*w,u*h)}}
-else{const s=sm((el-TB)/(TC-TB))*4;cx.beginPath();cx.moveTo(V[0][0],V[0][1]);for(let k=0;k<4;k++){const f=Math.min(1,Math.max(0,s-k));if(f<=0)break;cx.lineTo(V[k][0]+(V[k+1][0]-V[k][0])*f,V[k][1]+(V[k+1][1]-V[k][1])*f)}cx.stroke();
-for(let k=0;k<4;k++){if(s<k)break;const[x,y]=V[k];cx.lineWidth=1;for(const n of[V[(k+1)%4],V[(k+3)%4]]){const dx=n[0]-x,dy=n[1]-y,d=Math.hypot(dx,dy)||1,ex=x+dx/d*26,ey=y+dy/d*26;cx.beginPath();cx.moveTo(x,y);cx.lineTo(ex,ey);cx.stroke();cx.beginPath();cx.arc(ex,ey,3,0,6.283);cx.fillStyle='#e9af58';cx.fill()}
-cx.fillStyle='#fff8ea';cx.fillRect(x-4,y-4,8,8);cx.strokeRect(x-4,y-4,8,8)}
-if(el>=TC){cx.beginPath();cx.rect(L,T,w,h);cx.clip();cx.setLineDash([8,6]);cx.lineDashOffset=-t*40;cx.lineWidth=1.5;cx.beginPath();cx.arc(L+w/2,T+h/2,sm((el-TC)/(TE-TC))*Rm,0,6.283);cx.stroke()}}
-cx.restore()}
+const sm=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};let fd=[];
+function done(){const g=tgt;g.e.style.transition='opacity .7s';g.e.style.opacity=1;pend=pend.filter(x=>x!==g.e);fd.push({e:g.e,pc:g.pc,a:1});tgt=null}
 function init(){if(inited)return;inited=true;if(rm)return;pend=imgs.slice();imgs.forEach(e=>e.style.opacity=0)}
 function show(e){e.style.opacity=1;e.style.clipPath='none';pend=pend.filter(x=>x!==e)}
 function pick(t){for(const e of pend.slice())if(e.getBoundingClientRect().bottom<30)show(e);
 let best=null,bv=0;for(const e of pend){if(!e.complete||!e.naturalWidth)continue;const r=e.getBoundingClientRect(),v=Math.max(0,Math.min(r.bottom,H)-Math.max(r.top,0));if((v/r.height>.5||v>H*.45)&&v>bv){bv=v;best=e}}
-if(best){const r=best.getBoundingClientRect();tgt={e:best,r,t0:t,hx:0,hy:0,u:0,el:0,Rm:1};best.style.clipPath='polygon(0 0,0 0,0 0)';best.style.opacity=1}}
+if(best){const r=best.getBoundingClientRect(),w=Math.ceil(r.width),hh=Math.ceil(r.height),pc=document.createElement('canvas'),sc=document.createElement('canvas');pc.width=sc.width=w;pc.height=sc.height=hh;const g=sc.getContext('2d',{willReadFrequently:true}),nw=best.naturalWidth,nh=best.naturalHeight,s=Math.max(w/nw,hh/nh),dw=nw*s,dh=nh*s,op=getComputedStyle(best).objectPosition.split(' ').map(v=>parseFloat(v)/100),o0=isNaN(op[0])?.5:op[0],o1=isNaN(op[1])?.5:op[1];
+g.drawImage(best,(w-dw)*o0,(hh-dh)*o1,dw,dh);tgt={e:best,r,t0:t,w,h:hh,pc,pg:pc.getContext('2d'),d:g.getImageData(0,0,w,hh).data,D:1.6+Math.hypot(w,hh)/1500,el:0,hx:0,hy:0};
+for(const p of P)if(p.ab){p.ab=false;p.x=lx+Math.random()*8-4;p.y=ly+Math.random()*8-4;p.vx=p.vy=0}}}
 function frame(now){t=now/1000;cx.clearRect(0,0,W,H);const hero=scrollY<H*.5;morph+=((hero?0:1)-morph)*.05;
 if(inited&&!rm){if(hero)tgt=null;else if(!tgt)pick(t);
 if(tgt){const r=tgt.r=tgt.e.getBoundingClientRect(),v=Math.min(r.bottom,H)-Math.max(r.top,0),el=t-tgt.t0;
-if(v<r.height*.15&&v<H*.1){show(tgt.e);tgt=null}else{const w=r.width,hh=r.height,Rm=Math.hypot(w,hh)/2+4,u=sm((el-TC)/(TE-TC));tgt.e.style.clipPath=u>0?`circle(${u*Rm}px at ${w/2}px ${hh/2}px)`:'polygon(0 0,0 0,0 0)';tgt.el=el;tgt.Rm=Rm;tgt.u=u;const q=Hd(r,el);tgt.hx=q[0];tgt.hy=q[1];if(el>=TD){show(tgt.e);tgt=null}}}}
-if(tgt&&!hero)ov(tgt.r,tgt.el,t,tgt.Rm);
+if(v<r.height*.15&&v<H*.1){show(tgt.e);tgt=null}else{tgt.el=el;if(el>=.5+tgt.D)done()}}}
+for(let k=fd.length-1;k>=0;k--){const f=fd[k];f.a-=.016/.7;if(f.a<=0){fd.splice(k,1);continue}const q=f.e.getBoundingClientRect();cx.globalAlpha=f.a;cx.drawImage(f.pc,q.left,q.top)}
+cx.globalAlpha=1;if(tgt&&!hero)cx.drawImage(tgt.pc,tgt.r.left,tgt.r.top);
 sp+=((has?Math.hypot(mx-pmx,my-pmy):0)-sp)*.1;pmx=mx;pmy=my;act+=((has?Math.min(sp/10,1):0)-act)*.1;
 const on=!hero&&tgt,cx0=on?tgt.hx:(has?mx:W-60),cy0=on?tgt.hy:(has?my:H-60),m=morph;lx=cx0;ly=cy0;rs+=((on?.3:.14+act*.4)-rs)*.08;
 for(let i=0;i<P.length;i++){const p=P[i];if(p.al===undefined)p.al=1;
 if(hero){if(p.ab){p.ab=false;p.x=lx+Math.random()*8-4;p.y=ly+Math.random()*8-4;p.vx=p.vy=0}let ax=(p.hx-p.x)*.05,ay=(p.hy-scrollY-p.y)*.05;const dx=p.x-mx,dy=p.y-my,d=Math.hypot(dx,dy);
 if(d<130&&d>.1){const f=(1-d/130)*(1.6+sp*.05)*3;ax+=dx/d*f;ay+=dy/d*f}p.vx=(p.vx+ax)*.84;p.vy=(p.vy+ay)*.84}
-else if(on&&i%12===0){const K=P.length/12,j=(i/12)/K;let gx,gy;if(tgt.el<TC){const q=Hd(tgt.r,Math.max(0,tgt.el-Math.pow(j,1.3)*.35));gx=q[0]+Math.sin(t*5+p.ph)*5;gy=q[1]+Math.cos(t*4+p.ph)*5}else{const rad=tgt.u*tgt.Rm+Math.sin(t*3+p.ph)*6+4,a=j*6.283+t*1.2;gx=tgt.r.left+tgt.r.width/2+Math.cos(a)*rad;gy=tgt.r.top+tgt.r.height/2+Math.sin(a)*rad}p.vx=(p.vx+(gx-p.x)*.14)*.78;p.vy=(p.vy+(gy-p.y)*.14)*.78}
+else if(on){const el=tgt.el,r=tgt.r;let gx,gy;if(el<.5){gx=r.left-DX*50+Math.cos(p.ph*3)*40;gy=r.top-DY*50+Math.sin(p.ph*2)*40}else{const Lr=Math.abs(DY)*r.width+Math.abs(DX)*r.height+140,mx2=(Math.abs(DX)*r.width+Math.abs(DY)*r.height)/2+120,s=-mx2+2*mx2*sm((el-.5)/tgt.D),lat=(i/P.length-.5)*Lr+Math.sin(t*2.1+p.ph*3)*26+Math.sin(i*.02+t*3)*30,bk=Math.pow((p.ph*7.31)%1,2)*260-Math.sin(lat*.01+t*2.5)*60;gx=r.left+r.width/2+DX*(s-bk)+NX*lat;gy=r.top+r.height/2+DY*(s-bk)+NY*lat}p.vx=(p.vx+(gx-p.x)*.16)*.78;p.vy=(p.vy+(gy-p.y)*.16)*.78}
 else if(i%12!==0){if(p.ab)continue;p.vx=(p.vx+(cx0-p.x)*.06)*.85;p.vy=(p.vy+(cy0-p.y)*.06)*.85}
 else{const a=p.ph+t*p.spd*(on?2.2:1),r=p.rad*rs*(1+.25*Math.sin(t*1.3+p.ph))+(on?6:0),k=on?p.k*3:p.k,dm=on?.88:.93;p.vx=(p.vx+(cx0+Math.cos(a)*r-p.x)*k)*dm;p.vy=(p.vy+(cy0+Math.sin(a)*r*.65-p.y)*k)*dm}
 p.x+=p.vx;p.y+=p.vy;
-if(!hero&&i%12!==0&&Math.hypot(cx0-p.x,cy0-p.y)<14){p.ab=true;continue}
+if(on&&tgt.el>.45){const X=p.x-tgt.r.left,Y=p.y-tgt.r.top;if(X>=0&&Y>=0&&X<tgt.w&&Y<tgt.h){const o=((Y|0)*tgt.w+(X|0))*4,d=tgt.d;tgt.pg.fillStyle=`rgb(${d[o]},${d[o+1]},${d[o+2]})`;tgt.pg.beginPath();tgt.pg.arc(X,Y,8,0,6.283);tgt.pg.fill()}}
+if(!hero&&!on&&i%12!==0&&Math.hypot(cx0-p.x,cy0-p.y)<14){p.ab=true;continue}
 if(m>.02){const g=Math.atan2(p.vy,p.vx);p.rot+=Math.atan2(Math.sin(g-p.rot),Math.cos(g-p.rot))*.15*m}
 const rx=p.r*(1-m)+p.bs*m,ry=p.r*(1-m)+p.bs*.6*m;cx.fillStyle=m<.5?p.col:p.pc;cx.beginPath();cx.ellipse(p.x,p.y,rx,ry,p.rot*m,0,6.283);cx.fill()}
 cx.globalAlpha=1;if(!rm)requestAnimationFrame(frame)}
