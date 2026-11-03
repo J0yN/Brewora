@@ -102,7 +102,7 @@ cx.globalAlpha=1;cx.font='600 11px Montserrat,sans-serif';
 for(const g of tgs){cx.drawImage(g.pc,g.r.left,g.r.top);ui(g)}
 sp+=((has?Math.hypot(mx-pmx,my-pmy):0)-sp)*.1;pmx=mx;pmy=my;act+=((has?Math.min(sp/10,1):0)-act)*.1;
 const cx0=has?mx:W-60,cy0=has?my:H-60,m=morph;lx=cx0;ly=cy0;rs+=((.14+act*.4)-rs)*.08;
-const CR=new Path2D(),SK=new Path2D();
+const CR=new Path2D();
 for(let i=0;i<P.length;i++){const p=P[i];let busy=0,rd=0;
 if(hero){if(p.ab){p.ab=false;p.x=lx+Math.random()*8-4;p.y=ly+Math.random()*8-4;p.vx=p.vy=0}let ax=(p.hx-p.x)*.05,ay=(p.hy-scrollY-p.y)*.05;const dx=p.x-mx,dy=p.y-my,d=Math.hypot(dx,dy);
 if(d<130&&d>.1){const f=(1-d/130)*(1.6+sp*.05)*3;ax+=dx/d*f;ay+=dy/d*f}p.vx=(p.vx+ax)*.84;p.vy=(p.vy+ay)*.84}
@@ -120,9 +120,8 @@ if(rd){const g=p.tg,X=p.x-g.r.left,Y=p.y-g.r.top;if(X>=0&&Y>=0&&X<g.w&&Y<g.h){co
 if(!hero&&!busy&&i%12!==0&&Math.hypot(cx0-p.x,cy0-p.y)<14){p.ab=true;continue}
 if(m>.02){const g=Math.atan2(p.vy,p.vx);p.rot+=Math.atan2(Math.sin(g-p.rot),Math.cos(g-p.rot))*.15*m}
 const rx=p.r*(1-m)+p.bs*m,ry=p.r*(1-m)+p.bs*.6*m;cx.fillStyle=busy?CC[p.ro]:m<.5?p.col:p.pc;cx.beginPath();cx.ellipse(p.x,p.y,rx,ry,p.rot*m,0,6.283);cx.fill();
-if(m>.6&&rx>2.6){const c=Math.cos(p.rot),s=Math.sin(p.rot);CR.moveTo(p.x-c*rx*.75,p.y-s*rx*.75);CR.quadraticCurveTo(p.x-s*ry*.6,p.y+c*ry*.6,p.x+c*rx*.75,p.y+s*rx*.75)}
-if(Math.abs(p.vx)+Math.abs(p.vy)>5){SK.moveTo(p.x-p.vx*2.2,p.y-p.vy*2.2);SK.lineTo(p.x,p.y)}}
-cx.lineWidth=.9;cx.strokeStyle='rgba(70,25,12,.6)';cx.stroke(CR);cx.lineWidth=1.4;cx.strokeStyle='rgba(233,175,88,.4)';cx.stroke(SK);
+if(m>.6&&rx>2.6){const c=Math.cos(p.rot),s=Math.sin(p.rot);CR.moveTo(p.x-c*rx*.75,p.y-s*rx*.75);CR.quadraticCurveTo(p.x-s*ry*.6,p.y+c*ry*.6,p.x+c*rx*.75,p.y+s*rx*.75)}}
+cx.lineWidth=.9;cx.strokeStyle='rgba(70,25,12,.6)';cx.stroke(CR);
 cx.globalAlpha=1;if(!rm)requestAnimationFrame(frame)}
 addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;has=true});
 addEventListener('pointerdown',e=>{for(const p of P){const dx=p.x-e.clientX,dy=p.y-e.clientY,d=Math.hypot(dx,dy);if(d<240&&d>.1){const f=(1-d/240)*16;p.vx+=dx/d*f;p.vy+=dy/d*f}}});
